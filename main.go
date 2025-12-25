@@ -5,7 +5,16 @@ import (
 	"net/http"
 )
 
-func main() {
+type server struct {
+	addr string
+}
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello from the server"))
+}
+
+func main() {
+	s := &server{addr: ":8080"}
+
+	log.Fatal(http.ListenAndServe(s.addr, s))
 }
