@@ -9,26 +9,23 @@ type server struct {
 	addr string
 }
 
-func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		switch r.URL.Path {
-		case "/":
-			w.Write([]byte("index page"))
-			return
-		case "/users":
-			w.Write([]byte("users page"))
-			return
-		}
-	default:
-		w.Write([]byte("404 page"))
-		return
-	}
+func (s *server) getUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Luare User"))
+}
 
+func (s *server) createUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Creare User"))
 }
 
 func main() {
 	s := &server{addr: ":8080"}
+	mux := http.NewServeMux()
 
-	log.Fatal(http.ListenAndServe(s.addr, s))
+	srv := &http.Server{
+		Addr:    s.addr,
+		Handler: mux,
+	}
+	mux.HandleFunc("GET /users", s.getUserHandler)
+	mux.HandleFunc("POST /users", s.createUserHandler)
+	log.Fatal(http.ListenAndServe(srv.Addr, srv.Handler))
 }
